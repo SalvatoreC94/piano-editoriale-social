@@ -1,9 +1,7 @@
-// Dropdown options
 const tipoOpzioni = ["Post singolo", "Carosello", "Reel", "Storia", "Live"];
 const obiettivoOpzioni = ["Ispirare", "Informare", "Intrattenere", "Interagire", "Indirizzare"];
 const statoOpzioni = ["Da creare", "In bozza", "Pronto", "Pubblicato"];
 
-// Colori associati a valori selezionati
 const colorMap = {
     "Post singolo": "#f0f0f0",
     "Carosello": "#e3f2fd",
@@ -17,19 +15,17 @@ const colorMap = {
     "Interagire": "#fff9c4",
     "Indirizzare": "#ffe0b2",
 
-    "Da creare": "#f8d7da",     // rosso chiaro
-    "In bozza": "#fff3cd",      // giallo tenue
-    "Pronto": "#d1ecf1",        // azzurro
-    "Pubblicato": "#d4edda"     // verde chiaro
+    "Da creare": "#f8d7da",
+    "In bozza": "#fff3cd",
+    "Pronto": "#d1ecf1",
+    "Pubblicato": "#d4edda"
 };
 
-// Applica il colore visivo al <select>
 function applySelectColor(select) {
     const val = select.value;
     select.style.backgroundColor = colorMap[val] || "white";
 }
 
-// Crea un <select> con opzioni
 function createSelect(options, value = "") {
     const select = document.createElement("select");
 
@@ -51,7 +47,6 @@ function createSelect(options, value = "") {
     return select;
 }
 
-// Crea input testuale
 function createInput(value = "", type = "text") {
     const input = document.createElement("input");
     input.type = type;
@@ -59,7 +54,6 @@ function createInput(value = "", type = "text") {
     return input;
 }
 
-// Aggiunge una riga alla tabella
 function addRow(data = {}) {
     const tr = document.createElement("tr");
 
@@ -81,20 +75,43 @@ function addRow(data = {}) {
         tr.appendChild(td);
     });
 
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "🗑️";
+    deleteBtn.className = "delete-btn";
+    deleteBtn.onclick = () => {
+        tr.remove();
+        saveTable();
+    };
+
+    const actionTd = document.createElement("td");
+    actionTd.appendChild(deleteBtn);
+    tr.appendChild(actionTd);
+
     document.getElementById("tableBody").appendChild(tr);
     saveTable();
 }
 
-// Salva i dati della tabella in localStorage
 function saveTable() {
     const rows = document.querySelectorAll("#tableBody tr");
     const data = [];
 
     rows.forEach(row => {
         const cells = row.querySelectorAll("td");
+        const dateInput = cells[0].querySelector("input");
+        const giornoInput = cells[1].querySelector("input");
+
+        const dateValue = dateInput.value;
+
+        // Calcola giorno della settimana da data
+        if (dateValue) {
+            const giorni = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+            const date = new Date(dateValue);
+            giornoInput.value = giorni[date.getDay()];
+        }
+
         data.push({
-            data: cells[0].querySelector("input").value,
-            giorno: cells[1].querySelector("input").value,
+            data: dateInput.value,
+            giorno: giornoInput.value,
             tipo: cells[2].querySelector("select").value,
             argomento: cells[3].querySelector("input").value,
             obiettivo: cells[4].querySelector("select").value,
@@ -106,9 +123,9 @@ function saveTable() {
     });
 
     localStorage.setItem("duckbyte_piano_editoriale", JSON.stringify(data));
+    showToast("Salvato");
 }
 
-// Carica i dati della tabella
 function loadTable() {
     const saved = localStorage.getItem("duckbyte_piano_editoriale");
     if (saved) {
@@ -119,7 +136,6 @@ function loadTable() {
     }
 }
 
-// ✅ BRAND NAME - Caricamento e salvataggio nome modificabile
 function loadBrandName() {
     const saved = localStorage.getItem("duckbyte_brand_name") || "Duckbyte";
     document.getElementById("editableBrand").textContent = saved;
@@ -130,11 +146,25 @@ function saveBrandName() {
     localStorage.setItem("duckbyte_brand_name", name || "Duckbyte");
 }
 
-// Avvio al caricamento
+function showToast(message = "Salvato") {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.textContent = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add("show"), 50);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
+
+
 window.onload = () => {
     loadBrandName();
     loadTable();
 };
 
-// Auto-save su modifica tabella
 document.addEventListener("input", saveTable);
