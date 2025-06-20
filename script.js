@@ -1,3 +1,4 @@
+
 const tipoOpzioni = ["Post singolo", "Carosello", "Reel", "Storia", "Live"];
 const obiettivoOpzioni = ["Ispirare", "Informare", "Intrattenere", "Interagire", "Indirizzare"];
 const statoOpzioni = ["Da creare", "In bozza", "Pronto", "Pubblicato"];
@@ -8,13 +9,11 @@ const colorMap = {
     "Reel": "#fce4ec",
     "Storia": "#ede7f6",
     "Live": "#fff3e0",
-
     "Ispirare": "#e0f7fa",
     "Informare": "#e3fcef",
     "Intrattenere": "#f3e5f5",
     "Interagire": "#fff9c4",
     "Indirizzare": "#ffe0b2",
-
     "Da creare": "#f8d7da",
     "In bozza": "#fff3cd",
     "Pronto": "#d1ecf1",
@@ -28,7 +27,6 @@ function applySelectColor(select) {
 
 function createSelect(options, value = "") {
     const select = document.createElement("select");
-
     options.forEach(opt => {
         const option = document.createElement("option");
         option.value = opt;
@@ -36,14 +34,11 @@ function createSelect(options, value = "") {
         if (opt === value) option.selected = true;
         select.appendChild(option);
     });
-
     applySelectColor(select);
-
     select.addEventListener("change", () => {
         applySelectColor(select);
         saveTable();
     });
-
     return select;
 }
 
@@ -56,7 +51,7 @@ function createInput(value = "", type = "text") {
 
 function addRow(data = {}) {
     const tr = document.createElement("tr");
-
+    const headers = ["Data", "Giorno", "Tipo", "Argomento", "Obiettivo", "Caption", "Hashtag", "Stato", "Note"];
     const rowData = [
         createInput(data.data || "", "date"),
         createInput(data.giorno || ""),
@@ -69,26 +64,25 @@ function addRow(data = {}) {
         createInput(data.note || "")
     ];
 
-    rowData.forEach(el => {
+    rowData.forEach((el, index) => {
         const td = document.createElement("td");
+        td.setAttribute("data-label", headers[index]);
         td.appendChild(el);
         tr.appendChild(td);
     });
 
     const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "🗑️";
+    deleteBtn.textContent = "Elimina";
     deleteBtn.className = "delete-btn";
     deleteBtn.onclick = () => {
-        const firstConfirm = confirm("⚠️ Vuoi davvero eliminare questa riga?");
-        if (!firstConfirm) return;
-
-
+        if (!confirm("âš ï¸ Vuoi davvero eliminare questa riga?")) return;
         tr.remove();
         saveTable();
         showToast("Riga eliminata");
     };
 
     const actionTd = document.createElement("td");
+    actionTd.setAttribute("data-label", "Azioni");
     actionTd.appendChild(deleteBtn);
     tr.appendChild(actionTd);
 
@@ -104,15 +98,12 @@ function saveTable() {
         const cells = row.querySelectorAll("td");
         const dateInput = cells[0].querySelector("input");
         const giornoInput = cells[1].querySelector("input");
-
         const dateValue = dateInput.value;
-
         if (dateValue) {
-            const giorni = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+            const giorni = ["Domenica", "Lunedì", "MartedÃ¬", "Mercoledì", "Giovedì", "Venerd'ì", "Sabato"];
             const date = new Date(dateValue);
             giornoInput.value = giorni[date.getDay()];
         }
-
         data.push({
             data: dateInput.value,
             giorno: giornoInput.value,
@@ -154,24 +145,13 @@ function showToast(message = "Salvato") {
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.textContent = message;
-
     document.body.appendChild(toast);
-
     setTimeout(() => toast.classList.add("show"), 50);
-
     setTimeout(() => {
         toast.classList.remove("show");
         setTimeout(() => toast.remove(), 300);
     }, 2500);
 }
-
-window.onload = () => {
-    loadBrandName();
-    loadTable();
-};
-
-document.getElementById("exportCsvBtn").addEventListener("click", exportToCSV);
-document.addEventListener("input", saveTable);
 
 function exportToCSV() {
     const rows = document.querySelectorAll("#tableBody tr");
@@ -184,9 +164,7 @@ function exportToCSV() {
             const el = cell.querySelector("input, select");
             let val = el ? el.value : "";
             val = val.replace(/"/g, '""');
-            if (/,|\n/.test(val)) {
-                val = `"${val}"`;
-            }
+            if (/,|\n/.test(val)) val = `"${val}"`;
             return val;
         });
         csv.push(values.join(","));
@@ -201,3 +179,11 @@ function exportToCSV() {
     link.click();
     document.body.removeChild(link);
 }
+
+window.onload = () => {
+    loadBrandName();
+    loadTable();
+};
+
+document.getElementById("exportCsvBtn").addEventListener("click", exportToCSV);
+document.addEventListener("input", saveTable);
