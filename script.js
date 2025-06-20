@@ -167,4 +167,38 @@ window.onload = () => {
     loadTable();
 };
 
+document.getElementById("exportCsvBtn").addEventListener("click", exportToCSV);
+
 document.addEventListener("input", saveTable);
+
+
+function exportToCSV() {
+    const rows = document.querySelectorAll("#tableBody tr");
+    const headers = ["Data", "Giorno", "Tipo", "Argomento", "Obiettivo", "Caption", "Hashtag", "Stato", "Note"];
+    const csv = [headers.join(",")];
+
+    rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        const values = Array.from(cells).slice(0, 9).map(cell => {
+            const el = cell.querySelector("input, select");
+            let val = el ? el.value : "";
+            // Escape virgolette
+            val = val.replace(/"/g, '""');
+            // Se contiene virgole o ritorni a capo, racchiudi tra doppi apici
+            if (/,|\n/.test(val)) {
+                val = `"${val}"`;
+            }
+            return val;
+        });
+        csv.push(values.join(","));
+    });
+
+    const blob = new Blob([csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "piano-editoriale.csv";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
