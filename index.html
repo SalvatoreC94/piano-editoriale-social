@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Piano Editoriale Duckbyte</title>
+    <title>Piano Editoriale Instagram</title>
+    <link rel="icon" type="image/x-icon" href="logo-duckbyte.png">
+
     <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -13,9 +15,11 @@
     <h1>
         Piano Editoriale
         <span id="editableBrand" contenteditable="true" onblur="saveBrandName()">Duckbyte</span>
+        <p class="subtitle">Organizza, pianifica e pubblica i tuoi contenuti social in modo smart.</p>
     </h1>
 
     <button onclick="addRow()">➕ Aggiungi Riga</button>
+
 
     <table id="editorialTable">
         <thead>
@@ -37,7 +41,13 @@
             <!-- Righe dinamiche -->
         </tbody>
     </table>
+
     <button id="exportCsvBtn">⬇️ Esporta CSV</button>
+
+    <footer style="text-align: right; margin-top: 40px;">
+        <img src="footer-duckbyte.png" alt="Developed by Duckbyte" width="150
+        ">
+    </footer>
 
     <script src="script.js"></script>
 </body>

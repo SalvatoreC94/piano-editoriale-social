@@ -79,8 +79,13 @@ function addRow(data = {}) {
     deleteBtn.textContent = "🗑️";
     deleteBtn.className = "delete-btn";
     deleteBtn.onclick = () => {
+        const firstConfirm = confirm("⚠️ Vuoi davvero eliminare questa riga?");
+        if (!firstConfirm) return;
+
+
         tr.remove();
         saveTable();
+        showToast("Riga eliminata");
     };
 
     const actionTd = document.createElement("td");
@@ -102,7 +107,6 @@ function saveTable() {
 
         const dateValue = dateInput.value;
 
-        // Calcola giorno della settimana da data
         if (dateValue) {
             const giorni = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
             const date = new Date(dateValue);
@@ -161,16 +165,13 @@ function showToast(message = "Salvato") {
     }, 2500);
 }
 
-
 window.onload = () => {
     loadBrandName();
     loadTable();
 };
 
 document.getElementById("exportCsvBtn").addEventListener("click", exportToCSV);
-
 document.addEventListener("input", saveTable);
-
 
 function exportToCSV() {
     const rows = document.querySelectorAll("#tableBody tr");
@@ -182,9 +183,7 @@ function exportToCSV() {
         const values = Array.from(cells).slice(0, 9).map(cell => {
             const el = cell.querySelector("input, select");
             let val = el ? el.value : "";
-            // Escape virgolette
             val = val.replace(/"/g, '""');
-            // Se contiene virgole o ritorni a capo, racchiudi tra doppi apici
             if (/,|\n/.test(val)) {
                 val = `"${val}"`;
             }
