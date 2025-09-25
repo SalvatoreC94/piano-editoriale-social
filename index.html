@@ -3,53 +3,147 @@
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Piano Editoriale Instagram</title>
-    <link rel="icon" type="image/x-icon" href="logo-duckbyte.png">
-
+    <link rel="icon" type="image/x-icon" href="logo-duckbyte.png" />
     <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+    <!-- Header + Topbar -->
+    <header class="app-header">
+        <h1>
+            Piano Editoriale
+            <span id="editableBrand" contenteditable="true" onblur="saveBrandName()">Salvatore C.</span>
+            <p class="subtitle">
+                Organizza, pianifica e pubblica i tuoi contenuti social in modo smart.
+            </p>
+        </h1>
 
-    <h1>
-        Piano Editoriale
-        <span id="editableBrand" contenteditable="true" onblur="saveBrandName()">Duckbyte</span>
-        <p class="subtitle">Organizza, pianifica e pubblica i tuoi contenuti social in modo smart.</p>
-    </h1>
+        <div class="topbar container">
+            <div class="left-group">
+                <!-- Azioni principali -->
+                <button id="addRowBtn" class="btn btn-primary" aria-label="Aggiungi riga">
+                    <span class="btn-ico">➕</span>
+                    Aggiungi riga
+                </button>
 
-    <button onclick="addRow()">➕ Aggiungi Riga</button>
+                <button id="clearTableBtn" class="btn btn-danger" aria-label="Pulisci tabella">
+                    <span class="btn-ico">🗑️</span>
+                    Pulisci tabella
+                </button>
+
+                <button id="exportCsvBtn" class="btn btn-secondary" aria-label="Esporta CSV">
+                    ⬇️ Esporta CSV
+                </button>
+
+                <button id="exportJsonBtn" class="btn btn-secondary" aria-label="Backup JSON">
+                    💾 Backup JSON
+                </button>
+
+                <input id="importJsonInput" type="file" hidden accept=".json" />
+                <button id="importJsonBtn" class="btn btn-secondary" aria-label="Importa JSON">
+                    📂 Importa JSON
+                </button>
+            </div>
+
+            <div class="right-group">
+                <!-- Gestione profili -->
+                <div class="profiles">
+                    <select id="profileSelect" title="Profili piano" class="btn-select">
+                        <option value="principale" selected>Profilo: principale</option>
+                    </select>
+
+                    <button id="saveProfileBtn" class="btn btn-icon" title="Salva profilo">💾</button>
+                    <button id="newProfileBtn" class="btn btn-icon" title="Nuovo profilo">➕</button>
+                    <button id="deleteProfileBtn" class="btn btn-icon btn-danger" title="Elimina profilo">🗑️</button>
+                </div>
+
+                <!-- Tema -->
+                <button id="themeToggleBtn" class="btn btn-icon" title="Tema scuro/chiaro">🌙</button>
+            </div>
+        </div>
+
+        <!-- Filtri + Ricerca + Contatori -->
+        <div class="toolbar container">
+            <div class="filters">
+                <select id="filterTipo" class="btn-select">
+                    <option value="">Filtra per tipo</option>
+                </select>
+
+                <select id="filterStato" class="btn-select">
+                    <option value="">Filtra per stato</option>
+                </select>
+
+                <input id="searchInput" type="search" class="btn-input"
+                    placeholder="🔎 Cerca in Argomento / Caption / Hashtag" aria-label="Cerca" />
+            </div>
+
+            <div id="countersBar" class="counters">
+                Totale: <strong id="countTot">0</strong> |
+                Pubblicati: <strong id="countPub">0</strong>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tabella principale -->
+    <main class="container">
+        <div class="table-wrap">
+            <table id="editorialTable" aria-label="Piano editoriale">
+                <thead>
+                    <tr>
+                        <th class="col-handle" title="Trascina per riordinare">⠿</th>
+                        <th>Data</th>
+                        <th>Giorno</th>
+                        <th>Tipo</th>
+                        <th>Argomento</th>
+                        <th>Obiettivo</th>
+                        <th>Caption</th>
+                        <th>Hashtag</th>
+                        <th>Stato</th>
+                        <th>Note</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tableBody"><!-- Righe dinamiche --></tbody>
+            </table>
+        </div>
+    </main>
 
 
-    <table id="editorialTable">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Giorno</th>
-                <th>Tipo</th>
-                <th>Argomento</th>
-                <th>Obiettivo (5i)</th>
-                <th>Caption</th>
-                <th>Hashtag</th>
-                <th>Stato</th>
-                <th>Note</th>
-                <th>Azioni</th>
-            </tr>
-        </thead>
 
-        <tbody id="tableBody">
-            <!-- Righe dinamiche -->
-        </tbody>
-    </table>
+    <!-- Indicatore salvataggio -->
+    <div id="saveIndicator" aria-live="polite">💾 —</div>
 
-    <button id="exportCsvBtn">⬇️ Esporta CSV</button>
+    <!-- Modale: Nuovo profilo -->
+    <div id="profileModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="pm-title">
+        <div class="modal-backdrop" data-close-modal></div>
 
-    <footer style="text-align: right; margin-top: 40px;">
-        <img src="footer-duckbyte.png" alt="Developed by Duckbyte" width="150
-        ">
+        <div class="modal-card" role="document">
+            <div class="modal-header">
+                <h2 id="pm-title">Nuovo profilo</h2>
+                <button class="btn btn-icon" data-close-modal aria-label="Chiudi modale">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <label class="modal-label" for="pm-name">Nome profilo</label>
+                <input id="pm-name" type="text" class="btn-input" placeholder="Es. Campagna Natale" />
+                <p id="pm-error" class="modal-error" aria-live="assertive"></p>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-close-modal>Annulla</button>
+                <button id="pm-confirm" class="btn btn-primary">Crea profilo</button>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer>
+        <img src="footer-duckbyte.png" alt="Developed by Duckbyte" width="150" />
     </footer>
 
-    <script src="script.js"></script>
+    <script defer src="script.js"></script>
 </body>
 
 </html>
