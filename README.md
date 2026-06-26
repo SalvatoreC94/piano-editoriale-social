@@ -19,7 +19,10 @@ Questo tool nasce dall'esigenza di avere un sistema pratico per gestire post, ca
 ✅ **Dropdown con colori distintivi** per facilitare la lettura a colpo d’occhio  
 ✅ **Salvataggio automatico** dei dati nel browser tramite `localStorage`  
 ✅ **Responsive**: utilizzabile anche da mobile  
-✅ **Nessun backend** → nessuna installazione, nessun database
+✅ **Nessun backend** → nessuna installazione, nessun database  
+✅ **Riga d'esempio precompilata** al primo avvio, per capire subito come usarlo  
+✅ **Esportazione come immagine PNG** del riepilogo settimanale, pronta da condividere  
+✅ **CTA integrata** per trasformare il tool gratuito in contatti/follower su Instagram
 
 ---
 
@@ -55,13 +58,17 @@ Questi obiettivi sono gestibili tramite menù a tendina colorati.
 
 ---
 
+## 🎁 Tool gratuito da regalare su Instagram
+
+Questo strumento è pensato anche come **omaggio per chi commenta i post**: basta condividere il link
+e chi lo riceve può iniziare a pianificare subito, senza registrazione né installazione.
+La CTA in alto e nel footer permette di convertire l'uso del tool in nuovi contatti/follower.
+
 ## 🛠️ Possibili estensioni future
 
-- Esportazione in CSV
-- Drag & drop per riordinare i contenuti
 - Integrazione con Google Calendar
 - Supporto a più lingue
-- Modal per aggiunta rapida contenuti
+- Salvataggio cloud via link condivisibile (oltre al solo `localStorage`)
 
 ---
 
