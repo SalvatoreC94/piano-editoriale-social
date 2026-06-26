@@ -28,6 +28,23 @@ const colorMap = {
 /* Stato runtime */
 let currentProfile = DEFAULT_PROFILE;
 
+/* Riga d'esempio per chi apre il tool per la prima volta */
+function exampleRow() {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return {
+        data: d.toISOString().slice(0, 10),
+        giorno: "",
+        tipo: "Reel",
+        argomento: "Presentazione del brand",
+        obiettivo: "Interagire",
+        caption: "Oggi vi racconto chi siamo e cosa facciamo 👇",
+        hashtag: "#socialmediamarketing #contentcreator",
+        stato: "Da creare",
+        note: "Esempio: modifica o elimina questa riga",
+    };
+}
+
 /* =========================================
    UTILS
 ========================================= */
@@ -457,6 +474,69 @@ function exportToJSON() {
     downloadFile(JSON.stringify(rows, null, 2), `piano-editoriale_${currentProfile}.json`, "application/json");
 }
 
+/* Esporta un riepilogo settimanale come immagine PNG (condivisibile su Instagram) */
+function exportToImage() {
+    const rows = Array.from($$("#tableBody tr"))
+        .map(getRowData)
+        .filter((r) => r.data)
+        .sort((a, b) => a.data.localeCompare(b.data))
+        .slice(0, 7);
+
+    const brand = $("#editableBrand")?.textContent.trim() || currentProfile;
+    const padding = 32;
+    const rowHeight = 64;
+    const width = 720;
+    const height = 140 + rows.length * rowHeight + padding;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+
+    const isDark = document.body.classList.contains("dark");
+    ctx.fillStyle = isDark ? "#0b1220" : "#f4f6fb";
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = isDark ? "#60a5fa" : "#0d47a1";
+    ctx.font = "bold 28px Segoe UI, Arial, sans-serif";
+    ctx.fillText(`Piano editoriale — ${brand}`, padding, 50);
+
+    ctx.fillStyle = isDark ? "#a3b1c6" : "#5b6b82";
+    ctx.font = "14px Segoe UI, Arial, sans-serif";
+    ctx.fillText("Prossimi contenuti programmati", padding, 76);
+
+    rows.forEach((r, i) => {
+        const y = 110 + i * rowHeight;
+
+        ctx.fillStyle = isDark ? "#111827" : "#ffffff";
+        ctx.beginPath();
+        ctx.roundRect(padding, y, width - padding * 2, rowHeight - 12, 10);
+        ctx.fill();
+
+        ctx.fillStyle = isDark ? "#e6edf7" : "#0f172a";
+        ctx.font = "bold 16px Segoe UI, Arial, sans-serif";
+        ctx.fillText(`${r.data}  ·  ${r.tipo}`, padding + 16, y + 24);
+
+        ctx.fillStyle = isDark ? "#a3b1c6" : "#5b6b82";
+        ctx.font = "14px Segoe UI, Arial, sans-serif";
+        const caption = (r.argomento || r.caption || "").slice(0, 70);
+        ctx.fillText(caption, padding + 16, y + 44);
+    });
+
+    if (!rows.length) {
+        ctx.fillStyle = isDark ? "#a3b1c6" : "#5b6b82";
+        ctx.font = "16px Segoe UI, Arial, sans-serif";
+        ctx.fillText("Nessun contenuto con data programmata.", padding, 130);
+    }
+
+    canvas.toBlob((blob) => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `piano-editoriale_${currentProfile}.png`;
+        link.click();
+    });
+}
+
 function importFromJSON(file) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -712,7 +792,7 @@ function loadTable(profile = currentProfile) {
     if (saved) {
         JSON.parse(saved).forEach((row) => addRow(row));
     } else {
-        addRow();
+        addRow(exampleRow());
     }
 
     const ind = $("#saveIndicator");
@@ -788,6 +868,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $("#exportCsvBtn")?.addEventListener("click", exportToCSV);
     $("#exportJsonBtn")?.addEventListener("click", exportToJSON);
+    $("#exportImageBtn")?.addEventListener("click", exportToImage);
     $("#importJsonBtn")?.addEventListener("click", () => $("#importJsonInput")?.click());
     $("#importJsonInput")?.addEventListener("change", (e) => {
         if (e.target.files?.[0]) importFromJSON(e.target.files[0]);
