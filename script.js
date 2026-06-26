@@ -328,22 +328,22 @@ function addRow(data = {}) {
     tr.appendChild(tdHandle);
 
     // Celle editabili
-    const headers = ["Data", "Giorno", "Tipo", "Argomento", "Obiettivo", "Caption", "Hashtag", "Stato", "Note"];
-    const cells = [
-        createInput(data.data || "", "date", false, "", "data", rowId),
-        createInput(data.giorno || "", "text", false, "", "giorno", rowId),
-        createSelect(tipoOpzioni, data.tipo, "tipo", "tipo", rowId),
-        createInput(data.argomento || "", "text", true, "argomento", "argomento", rowId),
-        createSelect(obiettivoOpzioni, data.obiettivo, "", "obiettivo", rowId),
-        createInput(data.caption || "", "text", false, "", "caption", rowId),
-        createInput(data.hashtag || "", "text", true, "hashtag", "hashtag", rowId),
-        createSelect(statoOpzioni, data.stato, "stato", "stato", rowId),
-        createInput(data.note || "", "text", false, "", "note", rowId),
+    const fields = [
+        { key: "data", label: "Data", el: createInput(data.data || "", "date", false, "", "data", rowId) },
+        { key: "giorno", label: "Giorno", el: createInput(data.giorno || "", "text", false, "", "giorno", rowId) },
+        { key: "tipo", label: "Tipo", el: createSelect(tipoOpzioni, data.tipo, "tipo", "tipo", rowId) },
+        { key: "argomento", label: "Argomento", el: createInput(data.argomento || "", "text", true, "argomento", "argomento", rowId) },
+        { key: "obiettivo", label: "Obiettivo", el: createSelect(obiettivoOpzioni, data.obiettivo, "", "obiettivo", rowId) },
+        { key: "caption", label: "Caption", el: createInput(data.caption || "", "text", false, "", "caption", rowId) },
+        { key: "hashtag", label: "Hashtag", el: createInput(data.hashtag || "", "text", true, "hashtag", "hashtag", rowId) },
+        { key: "stato", label: "Stato", el: createSelect(statoOpzioni, data.stato, "stato", "stato", rowId) },
+        { key: "note", label: "Note", el: createInput(data.note || "", "text", false, "", "note", rowId) },
     ];
 
-    cells.forEach((el, i) => {
+    fields.forEach(({ key, label, el }) => {
         const td = document.createElement("td");
-        td.setAttribute("data-label", headers[i]);
+        td.setAttribute("data-label", label);
+        td.dataset.field = key;
         td.appendChild(el);
         tr.appendChild(td);
     });
@@ -388,20 +388,19 @@ function addRow(data = {}) {
     applyFiltersAndCounters();
 }
 
-/* Lettura/scrittura riga */
+/* Lettura/scrittura riga (basata su data-field, non su posizione delle colonne) */
+function fieldCell(tr, key) {
+    return tr.querySelector(`td[data-field="${key}"]`);
+}
+
 function getRowData(tr) {
-    const c = tr.querySelectorAll("td");
-    return {
-        data: c[1].querySelector("input").value,
-        giorno: c[2].querySelector("input").value,
-        tipo: c[3].querySelector("select").value,
-        argomento: c[4].querySelector("input").value,
-        obiettivo: c[5].querySelector("select").value,
-        caption: c[6].querySelector("input").value,
-        hashtag: c[7].querySelector("input").value,
-        stato: c[8].querySelector("select").value,
-        note: c[9].querySelector("input").value,
-    };
+    const fieldKeys = ["data", "giorno", "tipo", "argomento", "obiettivo", "caption", "hashtag", "stato", "note"];
+    const out = {};
+    fieldKeys.forEach((key) => {
+        const cell = fieldCell(tr, key);
+        out[key] = cell?.querySelector("input,select")?.value || "";
+    });
+    return out;
 }
 
 function saveTable() {
@@ -410,10 +409,9 @@ function saveTable() {
     const giorni = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
 
     rows.forEach((row) => {
-        const c = row.querySelectorAll("td");
-        const dateInput = c[1].querySelector("input");
-        const giornoInput = c[2].querySelector("input");
-        if (dateInput.value) {
+        const dateInput = fieldCell(row, "data")?.querySelector("input");
+        const giornoInput = fieldCell(row, "giorno")?.querySelector("input");
+        if (dateInput?.value && giornoInput) {
             giornoInput.value = giorni[new Date(dateInput.value).getDay()];
         }
         data.push(getRowData(row));
@@ -900,6 +898,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* Tema */
     $("#themeToggleBtn")?.addEventListener("click", toggleTheme);
+
+    /* Menu "altre azioni" (compresso su mobile) */
+    const moreBtn = $("#moreActionsBtn");
+    const secondaryActions = $("#secondaryActions");
+    moreBtn?.addEventListener("click", () => {
+        const open = secondaryActions?.classList.toggle("open");
+        moreBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+
+    /* Tip di onboarding al primo utilizzo */
+    const ONBOARDING_KEY = `${LS_PREFIX}onboarding_seen`;
+    const tip = $("#onboardingTip");
+    if (tip && !localStorage.getItem(ONBOARDING_KEY)) {
+        tip.hidden = false;
+    }
+    $("#onboardingDismiss")?.addEventListener("click", () => {
+        if (tip) tip.hidden = true;
+        localStorage.setItem(ONBOARDING_KEY, "1");
+    });
 
     /* Drag & drop righe */
     initDragAndDrop();

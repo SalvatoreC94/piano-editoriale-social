@@ -25,35 +25,49 @@
             <a id="ctaLink" href="https://www.instagram.com/_duckbyte" target="_blank" rel="noopener">Scrivimi su Instagram</a>
         </div>
 
+        <div class="onboarding-tip" id="onboardingTip" hidden>
+            👋 Trovi già una riga di esempio: modificala o cancellala. Ogni modifica viene salvata
+            automaticamente sul tuo dispositivo.
+            <button id="onboardingDismiss" class="btn btn-icon" aria-label="Chiudi suggerimento">✕</button>
+        </div>
+
         <div class="topbar container">
             <div class="left-group">
-                <!-- Azioni principali -->
+                <!-- Azioni principali, sempre visibili -->
                 <button id="addRowBtn" class="btn btn-primary" aria-label="Aggiungi riga">
                     <span class="btn-ico">➕</span>
                     Aggiungi riga
-                </button>
-
-                <button id="clearTableBtn" class="btn btn-danger" aria-label="Pulisci tabella">
-                    <span class="btn-ico">🗑️</span>
-                    Pulisci tabella
-                </button>
-
-                <button id="exportCsvBtn" class="btn btn-secondary" aria-label="Esporta CSV">
-                    ⬇️ Esporta CSV
-                </button>
-
-                <button id="exportJsonBtn" class="btn btn-secondary" aria-label="Backup JSON">
-                    💾 Backup JSON
                 </button>
 
                 <button id="exportImageBtn" class="btn btn-secondary" aria-label="Esporta come immagine">
                     🖼️ Esporta immagine
                 </button>
 
-                <input id="importJsonInput" type="file" hidden accept=".json" />
-                <button id="importJsonBtn" class="btn btn-secondary" aria-label="Importa JSON">
-                    📂 Importa JSON
+                <button id="moreActionsBtn" class="btn btn-icon more-toggle" aria-label="Altre azioni"
+                    aria-expanded="false" aria-controls="secondaryActions">
+                    ⋯
                 </button>
+
+                <!-- Azioni secondarie: su mobile compresse dietro "⋯" -->
+                <div id="secondaryActions" class="secondary-actions">
+                    <button id="clearTableBtn" class="btn btn-danger" aria-label="Pulisci tabella">
+                        <span class="btn-ico">🗑️</span>
+                        Pulisci tabella
+                    </button>
+
+                    <button id="exportCsvBtn" class="btn btn-secondary" aria-label="Esporta CSV">
+                        ⬇️ Esporta CSV
+                    </button>
+
+                    <button id="exportJsonBtn" class="btn btn-secondary" aria-label="Backup JSON">
+                        💾 Backup JSON
+                    </button>
+
+                    <input id="importJsonInput" type="file" hidden accept=".json" />
+                    <button id="importJsonBtn" class="btn btn-secondary" aria-label="Importa JSON">
+                        📂 Importa JSON
+                    </button>
+                </div>
             </div>
 
             <div class="right-group">

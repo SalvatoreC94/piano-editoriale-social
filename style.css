@@ -676,6 +676,62 @@ td .row-actions {
 }
 
 /* =============================
+   MENU "ALTRE AZIONI" (compresso su mobile)
+============================= */
+.more-toggle {
+    display: none;
+}
+
+.secondary-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .more-toggle {
+        display: inline-flex;
+    }
+
+    .secondary-actions {
+        display: none;
+        width: 100%;
+    }
+
+    .secondary-actions.open {
+        display: flex;
+    }
+}
+
+/* =============================
+   ONBOARDING TIP
+============================= */
+.onboarding-tip[hidden] {
+    display: none;
+}
+
+.onboarding-tip {
+    max-width: 720px;
+    margin: 0.75rem auto 0;
+    padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 0.9rem;
+    box-shadow: var(--shadow);
+}
+
+.onboarding-tip .btn-icon {
+    margin-left: auto;
+    padding: 0.3rem 0.5rem;
+    min-width: auto;
+}
+
+/* =============================
    CTA BANNER (omaggio Instagram)
 ============================= */
 .cta-banner {
