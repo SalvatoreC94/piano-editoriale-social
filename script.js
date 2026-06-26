@@ -25,6 +25,26 @@ const colorMap = {
     "Pubblicato": "#d4edda",
 };
 
+/* =========================================
+   ANALYTICS ANONIME (nessun dato personale)
+   Solo conteggio eventi aggregati per capire l'uso del tool.
+========================================= */
+const SUPABASE_URL = "https://galmzuqcmfdhuexoeweq.supabase.co";
+const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhbG16dXFjbWZkaHVleG9ld2VxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0OTYwNDAsImV4cCI6MjA5ODA3MjA0MH0.SW8Cmiosr2ZkGHnDEvzrRNdm6BHVsiuGJ88tITJD3-k";
+
+function trackEvent(eventType) {
+    fetch(`${SUPABASE_URL}/rest/v1/usage_events`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ event_type: eventType }),
+    }).catch(() => {});
+}
+
 /* Stato runtime */
 let currentProfile = DEFAULT_PROFILE;
 
@@ -803,6 +823,7 @@ function loadTable(profile = currentProfile) {
    INIT
 ========================================= */
 document.addEventListener("DOMContentLoaded", () => {
+    trackEvent("open");
     applyTheme();
 
     /* Filtri + ricerca */
@@ -868,7 +889,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     $("#exportCsvBtn")?.addEventListener("click", exportToCSV);
     $("#exportJsonBtn")?.addEventListener("click", exportToJSON);
-    $("#exportImageBtn")?.addEventListener("click", exportToImage);
+    $("#exportImageBtn")?.addEventListener("click", () => {
+        exportToImage();
+        trackEvent("export_image");
+    });
     $("#importJsonBtn")?.addEventListener("click", () => $("#importJsonInput")?.click());
     $("#importJsonInput")?.addEventListener("change", (e) => {
         if (e.target.files?.[0]) importFromJSON(e.target.files[0]);
